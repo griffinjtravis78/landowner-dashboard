@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ozark Edge-AI Land Intelligence | Master Platform</title>
+    <title>Ozark Edge-AI Land Intelligence | Master Hardcoded Prototype</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js for interactivity -->
@@ -24,13 +24,13 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg tracking-wide text-white">Ozark Land Intelligence</h1>
-                    <p class="text-xs text-emerald-400">Four-State Regional Platform</p>
+                    <p class="text-xs text-emerald-400">Four-State Regional Platform (Hardcoded Simulation)</p>
                 </div>
             </div>
             
             <div class="flex items-center space-x-4">
-                <!-- PROPERTY SELECTOR DROPDOWN (Active on Dashboard Tab) -->
-                <div class="relative" x-show="activeTab === 'dashboard'">
+                <!-- PROPERTY SELECTOR DROPDOWN -->
+                <div class="relative">
                     <select x-model="selectedPropertyId" @change="updateChart()" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                         <template x-for="prop in properties" :key="prop.id">
                             <option :value="prop.id" x-text="prop.name + ' (' + prop.acres + ' Acres)'"></option>
@@ -51,16 +51,16 @@
     <nav class="bg-slate-800/50 border-b border-slate-700/60 sticky top-16 z-40 backdrop-blur">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto space-x-8">
             <button @click="activeTab = 'dashboard'" :class="activeTab === 'dashboard' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-2 border-b-2 font-medium text-sm transition whitespace-nowrap flex items-center">
-                <i class="fa-solid fa-chart-line mr-2"></i> 1. Landowner Dashboard
-            </button>
-            <button @click="activeTab = 'storefront'" :class="activeTab === 'storefront' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-2 border-b-2 font-medium text-sm transition whitespace-nowrap flex items-center">
-                <i class="fa-solid fa-store mr-2"></i> 2. E-Commerce Storefront
+                <i class="fa-solid fa-chart-line mr-2"></i> 1. Live Landowner Dashboard
             </button>
             <button @click="activeTab = 'alerts'" :class="activeTab === 'alerts' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-2 border-b-2 font-medium text-sm transition whitespace-nowrap flex items-center">
-                <i class="fa-solid fa-bell mr-2"></i> 3. Edge Alert Simulator
+                <i class="fa-solid fa-bell mr-2"></i> 2. Edge Alert & SMS Simulator
             </button>
             <button @click="activeTab = 'ledger'" :class="activeTab === 'ledger' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-2 border-b-2 font-medium text-sm transition whitespace-nowrap flex items-center">
-                <i class="fa-solid fa-file-invoice-dollar mr-2"></i> 4. Carbon & Grant Ledger
+                <i class="fa-solid fa-file-invoice-dollar mr-2"></i> 3. Carbon & USDA Grant Ledger
+            </button>
+            <button @click="activeTab = 'storefront'" :class="activeTab === 'storefront' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-2 border-b-2 font-medium text-sm transition whitespace-nowrap flex items-center">
+                <i class="fa-solid fa-store mr-2"></i> 4. E-Commerce & QR Wizard
             </button>
         </div>
     </nav>
@@ -68,7 +68,7 @@
     <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- ================= MODULE 1: LANDOWNER DASHBOARD ================= -->
+        <!-- ================= TAB 1: LANDOWNER DASHBOARD ================= -->
         <div x-show="activeTab === 'dashboard'" class="space-y-8" x-transition>
             <!-- PROPERTY OVERVIEW BANNER -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -169,80 +169,11 @@
             </div>
         </div>
 
-        <!-- ================= MODULE 2: E-COMMERCE STOREFRONT ================= -->
-        <div x-show="activeTab === 'storefront'" class="space-y-12" x-transition>
-            <div class="text-center max-w-3xl mx-auto">
-                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-widest">Self-Service HaaS Platform</span>
-                <h2 class="text-3xl font-extrabold text-white mt-3">Equip Your Property in the Four-State Region</h2>
-                <p class="text-slate-300 mt-2 text-sm">Solar-powered LoRaWAN gateways and multi-depth soil sensors dropshipped directly to your door.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- PRODUCT 1 -->
-                <div class="bg-slate-800 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
-                    <div>
-                        <div class="bg-emerald-500/10 text-emerald-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-box-open text-2xl"></i></div>
-                        <h3 class="text-xl font-bold text-white">Ozark Starter Homestead Kit</h3>
-                        <p class="text-xs text-slate-400 mt-1">Ideal for 20 to 100 acres</p>
-                        <p class="text-slate-300 text-sm mt-3">Includes 1x Solar Gateway, 3x Soil Moisture Probes, and 1x Water Tank Monitor.</p>
-                    </div>
-                    <div class="mt-6 pt-6 border-t border-slate-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <span class="text-2xl font-bold text-white">$1,500</span>
-                                <span class="text-xs text-slate-400 block">+ $59/mo SaaS Retainer</span>
-                            </div>
-                        </div>
-                        <button @click="addToCart({name: 'Ozark Starter Homestead Kit', price: 1500, recurring: 59})" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow transition text-center">Add to Cart</button>
-                    </div>
-                </div>
-
-                <!-- PRODUCT 2 -->
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
-                    <div>
-                        <div class="bg-blue-500/10 text-blue-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-droplet text-2xl"></i></div>
-                        <h3 class="text-xl font-bold text-white">Extra Soil Moisture Probe</h3>
-                        <p class="text-xs text-slate-400 mt-1">Deep-Root Node</p>
-                        <p class="text-slate-300 text-sm mt-3">Monitor distant pastures, creek bottoms, or distinct timber stands.</p>
-                    </div>
-                    <div class="mt-6 pt-6 border-t border-slate-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <span class="text-2xl font-bold text-white">$250</span>
-                                <span class="text-xs text-slate-400 block">One-time hardware fee</span>
-                            </div>
-                        </div>
-                        <button @click="addToCart({name: 'Extra Soil Moisture Probe', price: 250, recurring: 0})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow transition text-center border border-slate-600">Add to Cart</button>
-                    </div>
-                </div>
-
-                <!-- PRODUCT 3 -->
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
-                    <div>
-                        <div class="bg-amber-500/10 text-amber-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-water text-2xl"></i></div>
-                        <h3 class="text-xl font-bold text-white">Remote Water Tank Monitor</h3>
-                        <p class="text-xs text-slate-400 mt-1">Ultrasonic Level & Freeze Alert</p>
-                        <p class="text-slate-300 text-sm mt-3">Prevent stock tank runouts and frozen pipe disasters with real-time tracking.</p>
-                    </div>
-                    <div class="mt-6 pt-6 border-t border-slate-700">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <span class="text-2xl font-bold text-white">$180</span>
-                                <span class="text-xs text-slate-400 block">One-time hardware fee</span>
-                            </div>
-                        </div>
-                        <button @click="addToCart({name: 'Remote Water Tank Monitor', price: 180, recurring: 0})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow transition text-center border border-slate-600">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= MODULE 3: EDGE ALERT SIMULATOR ================= -->
+        <!-- ================= TAB 2: EDGE ALERT & SMS SIMULATOR ================= -->
         <div x-show="activeTab === 'alerts'" class="space-y-6" x-transition>
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow">
-                <h3 class="text-2xl font-bold text-white mb-2">Edge-AI Automated Alert Simulator</h3>
-                <p class="text-slate-400 text-sm mb-6">Test how your property sensors instantly push automated SMS and email notifications during critical weather or equipment events.</p>
+                <h3 class="text-2xl font-bold text-white mb-2">Edge-AI Automated Alert & SMS Simulator</h3>
+                <p class="text-slate-400 text-sm mb-6">Test how your property sensors instantly push automated Twilio SMS and SendGrid email notifications to rural landowners.</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <button @click="triggerAlert('freeze')" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-xl p-5 text-left transition group">
@@ -268,22 +199,23 @@
                     </button>
                 </div>
 
-                <!-- LIVE ALERT NOTIFICATION BANNER -->
-                <div x-show="alertTriggered" x-transition class="bg-red-500/10 border border-red-500/30 rounded-2xl p-5 flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-red-500 text-white p-3 rounded-xl animate-bounce"><i class="fa-solid fa-bell text-xl"></i></div>
-                        <div>
-                            <p class="text-xs font-bold text-red-400 uppercase tracking-wider">Automated SMS & Push Alert Dispatched</p>
-                            <h4 class="text-white font-bold text-lg" x-text="alertTitle"></h4>
-                            <p class="text-slate-300 text-sm" x-text="alertMessage"></p>
-                        </div>
+                <!-- LIVE SMS LOG BOX -->
+                <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6">
+                    <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-terminal mr-2"></i> Hardcoded Twilio SMS Dispatch Log</h4>
+                    <div class="space-y-3 font-mono text-xs">
+                        <template x-for="(log, index) in smsLogs" :key="index">
+                            <div class="bg-slate-800 border border-slate-700/50 p-3 rounded-lg flex justify-between items-center">
+                                <span class="text-slate-300" x-text="log.text"></span>
+                                <span class="text-slate-500 text-[10px]" x-text="log.time"></span>
+                            </div>
+                        </template>
+                        <p x-show="smsLogs.length === 0" class="text-slate-500 text-center py-4">Click an alert button above to simulate live SMS dispatches.</p>
                     </div>
-                    <button @click="alertTriggered = false" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
         </div>
 
-        <!-- ================= MODULE 4: CARBON & USDA GRANT LEDGER ================= -->
+        <!-- ================= TAB 3: CARBON & USDA GRANT LEDGER ================= -->
         <div x-show="activeTab === 'ledger'" class="space-y-6" x-transition>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
@@ -343,6 +275,72 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: E-COMMERCE & STOREFRONT ================= -->
+        <div x-show="activeTab === 'storefront'" class="space-y-12" x-transition>
+            <div class="text-center max-w-3xl mx-auto">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-widest">Self-Service HaaS Platform</span>
+                <h2 class="text-3xl font-extrabold text-white mt-3">Equip Your Property in the Four-State Region</h2>
+                <p class="text-slate-300 mt-2 text-sm">Solar-powered LoRaWAN gateways and multi-depth soil sensors dropshipped directly to your door.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-800 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
+                    <div>
+                        <div class="bg-emerald-500/10 text-emerald-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-box-open text-2xl"></i></div>
+                        <h3 class="text-xl font-bold text-white">Ozark Starter Homestead Kit</h3>
+                        <p class="text-xs text-slate-400 mt-1">Ideal for 20 to 100 acres</p>
+                        <p class="text-slate-300 text-sm mt-3">Includes 1x Solar Gateway, 3x Soil Moisture Probes, and 1x Water Tank Monitor.</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-2xl font-bold text-white">$1,500</span>
+                                <span class="text-xs text-slate-400 block">+ $59/mo SaaS Retainer</span>
+                            </div>
+                        </div>
+                        <button @click="addToCart({name: 'Ozark Starter Homestead Kit', price: 1500, recurring: 59})" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow transition text-center">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
+                    <div>
+                        <div class="bg-blue-500/10 text-blue-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-droplet text-2xl"></i></div>
+                        <h3 class="text-xl font-bold text-white">Extra Soil Moisture Probe</h3>
+                        <p class="text-xs text-slate-400 mt-1">Deep-Root Node</p>
+                        <p class="text-slate-300 text-sm mt-3">Monitor distant pastures, creek bottoms, or distinct timber stands.</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-2xl font-bold text-white">$250</span>
+                                <span class="text-xs text-slate-400 block">One-time hardware fee</span>
+                            </div>
+                        </div>
+                        <button @click="addToCart({name: 'Extra Soil Moisture Probe', price: 250, recurring: 0})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow transition text-center border border-slate-600">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
+                    <div>
+                        <div class="bg-amber-500/10 text-amber-400 p-4 rounded-xl inline-block mb-4"><i class="fa-solid fa-water text-2xl"></i></div>
+                        <h3 class="text-xl font-bold text-white">Remote Water Tank Monitor</h3>
+                        <p class="text-xs text-slate-400 mt-1">Ultrasonic Level & Freeze Alert</p>
+                        <p class="text-slate-300 text-sm mt-3">Prevent stock tank runouts and frozen pipe disasters with real-time tracking.</p>
+                    </div>
+                    <div class="mt-6 pt-6 border-t border-slate-700">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-2xl font-bold text-white">$180</span>
+                                <span class="text-xs text-slate-400 block">One-time hardware fee</span>
+                            </div>
+                        </div>
+                        <button @click="addToCart({name: 'Remote Water Tank Monitor', price: 180, recurring: 0})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow transition text-center border border-slate-600">Add to Cart</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -429,9 +427,7 @@
                 cartOpen: false,
                 checkoutOpen: false,
                 wizardOpen: false,
-                alertTriggered: false,
-                alertTitle: '',
-                alertMessage: '',
+                smsLogs: [],
                 chartInstance: null,
                 cart: [{ name: 'Ozark Starter Homestead Kit', price: 1500, recurring: 59 }],
 
@@ -548,17 +544,16 @@
                 },
 
                 triggerAlert(type) {
-                    this.alertTriggered = true;
+                    let text = '';
+                    const now = new Date().toLocaleTimeString();
                     if (type === 'freeze') {
-                        this.alertTitle = '⚠️ Critical Frost Warning Triggered';
-                        this.alertMessage = 'Ground temperature dropped to 31.5°F on ' + this.currentProperty.name + '. Automated alert sent.';
+                        text = '⚠️ [Twilio SMS]: Critical Frost Warning! Ground temp at ' + this.currentProperty.name + ' dropped to 31.5°F.';
                     } else if (type === 'water') {
-                        this.alertTitle = '🚨 Stock Tank Water Failure';
-                        this.alertMessage = 'Water level dropped to 12% in Pasture Tank 2 (' + this.currentProperty.name + ').';
+                        text = '🚨 [Twilio SMS]: Stock Tank Alert! Water level at ' + this.currentProperty.name + ' is critically low (12%).';
                     } else if (type === 'drought') {
-                        this.alertTitle = '📊 Drought Stress & Grazing Alert';
-                        this.alertMessage = 'Deep soil moisture deficit detected across ' + this.currentProperty.name + '.';
+                        text = '📊 [Twilio SMS]: Soil Moisture Alert! Deep root drought stress detected on ' + this.currentProperty.name + '.';
                     }
+                    this.smsLogs.unshift({ text: text, time: now });
                 },
 
                 renderChart() {
