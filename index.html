@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ozark Edge-AI Land Intelligence | Landowner Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js for interactivity -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Chart.js for telemetry graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased" x-data="dashboardApp()">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-seedling text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide text-white">Ozark Land Intelligence</h1>
+                    <p class="text-xs text-emerald-400">Four-State Regional Edge Network</p>
+                </div>
+            </div>
+            
+            <!-- PROPERTY SELECTOR DROPDOWN -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <label class="text-xs text-slate-400 block mb-1">Active Property View:</label>
+                    <select x-model="selectedPropertyId" @change="updatePropertyData()" class="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                        <template x-for="prop in properties" :key="prop.id">
+                            <option :value="prop.id" x-text="prop.name + ' (' + prop.acres + ' Acres)'"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- PROPERTY OVERVIEW BANNER -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-8 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <div class="flex items-center space-x-3 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" x-text="currentProperty.type"></span>
+                    <span class="text-slate-400 text-sm"><i class="fa-solid fa-location-dot text-emerald-500 mr-1"></i> <span x-text="currentProperty.location"></span></span>
+                </div>
+                <h2 class="text-2xl font-bold text-white" x-text="currentProperty.name"></h2>
+                <p class="text-slate-300 text-sm mt-1" x-text="currentProperty.description"></p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <div class="bg-slate-700/50 border border-slate-600 px-4 py-2.5 rounded-xl text-center">
+                    <p class="text-xs text-slate-400">Gateway Status</p>
+                    <p class="text-sm font-bold text-emerald-400"><i class="fa-solid fa-signal mr-1"></i> <span x-text="currentProperty.gatewayStatus"></span></p>
+                </div>
+                <div class="bg-slate-700/50 border border-slate-600 px-4 py-2.5 rounded-xl text-center">
+                    <p class="text-xs text-slate-400">Active Sensors</p>
+                    <p class="text-sm font-bold text-white" x-text="currentProperty.activeNodes + ' Nodes Online'"></p>
+                </div>
+                <div class="bg-slate-700/50 border border-slate-600 px-4 py-2.5 rounded-xl text-center">
+                    <p class="text-xs text-slate-400">Est. Annual Payout</p>
+                    <p class="text-sm font-bold text-emerald-400" x-text="currentProperty.annualPayout"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <div class="flex border-b border-slate-700 mb-8 overflow-x-auto">
+            <button @click="activeTab = 'telemetry'" :class="activeTab === 'telemetry' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-6 border-b-2 font-medium text-sm transition whitespace-nowrap">
+                <i class="fa-solid fa-chart-line mr-2"></i> Live Telemetry & Sensors
+            </button>
+            <button @click="activeTab = 'alerts'" :class="activeTab === 'alerts' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-6 border-b-2 font-medium text-sm transition whitespace-nowrap">
+                <i class="fa-solid fa-bell mr-2"></i> Edge Alert Simulator
+            </button>
+            <button @click="activeTab = 'ledger'" :class="activeTab === 'ledger' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-6 border-b-2 font-medium text-sm transition whitespace-nowrap">
+                <i class="fa-solid fa-file-invoice-dollar mr-2"></i> Carbon & USDA Grant Ledger
+            </button>
+            <button @click="activeTab = 'storefront'" :class="activeTab === 'storefront' ? 'border-emerald-500 text-emerald-400' : 'border-transparent text-slate-400 hover:text-slate-200'" class="py-3 px-6 border-b-2 font-medium text-sm transition whitespace-nowrap">
+                <i class="fa-solid fa-box-open mr-2"></i> E-Commerce Starter Kit
+            </button>
+        </div>
+
+        <!-- TAB 1: TELEMETRY & SENSORS -->
+        <div x-show="activeTab === 'telemetry'" class="space-y-8">
+            <!-- SENSOR METRIC CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Soil Moisture (30cm)</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" x-text="currentProperty.sensors.soilMoisture"></h3>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 p-3 rounded-xl"><i class="fa-solid fa-droplet text-lg"></i></div>
+                    </div>
+                    <p class="text-xs text-emerald-400 mt-3"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Optimal range for root health</p>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Ground Temperature</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" x-text="currentProperty.sensors.soilTemp"></h3>
+                        </div>
+                        <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl"><i class="fa-solid fa-temperature-half text-lg"></i></div>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-3"><i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> No frost risk detected</p>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Stock Tank Water Level</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" x-text="currentProperty.sensors.waterLevel"></h3>
+                        </div>
+                        <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl"><i class="fa-solid fa-water text-lg"></i></div>
+                    </div>
+                    <p class="text-xs text-blue-400 mt-3"><i class="fa-solid fa-circle-check mr-1"></i> Float valve functioning normally</p>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Carbon Sequestration Rate</p>
+                            <h3 class="text-2xl font-bold text-white mt-1" x-text="currentProperty.sensors.carbonRate"></h3>
+                        </div>
+                        <div class="bg-purple-500/10 text-purple-400 p-3 rounded-xl"><i class="fa-solid fa-tree text-lg"></i></div>
+                    </div>
+                    <p class="text-xs text-purple-400 mt-3"><i class="fa-solid fa-shield-halved mr-1"></i> Verified MRV Data Packet</p>
+                </div>
+            </div>
+
+            <!-- CHART & MAP PREVIEW -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                    <h3 class="text-lg font-bold text-white mb-4">7-Day Soil Moisture & Temperature Trends</h3>
+                    <div class="h-72 relative">
+                        <canvas id="telemetryChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">Property Perimeter & Nodes</h3>
+                        <p class="text-xs text-slate-400 mb-4">LoRaWAN mesh coverage mapped across local terrain.</p>
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl h-48 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                            <div class="text-center z-10">
+                                <i class="fa-solid fa-map-location-dot text-3xl text-emerald-500 mb-2"></i>
+                                <p class="text-xs text-slate-300 font-mono" x-text="currentProperty.coordinates"></p>
+                                <span class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400">Mesh Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between text-xs text-slate-400">
+                        <span>Gateway: <strong class="text-white">Node-GW-01</strong></span>
+                        <span>Battery: <strong class="text-emerald-400">98% Solar</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: EDGE ALERT SIMULATOR -->
+        <div x-show="activeTab === 'alerts'" class="space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                <h3 class="text-xl font-bold text-white mb-2">Edge-AI Automated Alert System</h3>
+                <p class="text-slate-400 text-sm mb-6">Test how your property sensors trigger instant automated SMS and email notifications during critical weather or equipment events.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button @click="triggerAlert('freeze')" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-xl p-5 text-left transition group">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="bg-blue-500/20 text-blue-400 p-2.5 rounded-lg group-hover:scale-110 transition"><i class="fa-solid fa-snowflake text-lg"></i></div>
+                            <h4 class="font-bold text-white">Simulate Freeze Event</h4>
+                        </div>
+                        <p class="text-xs text-slate-400">Triggers when ground temp drops below 32°F to protect early pasture growth.</p>
+                    </button>
+                    <button @click="triggerAlert('water')" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-xl p-5 text-left transition group">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="bg-amber-500/20 text-amber-400 p-2.5 rounded-lg group-hover:scale-110 transition"><i class="fa-solid fa-triangle-exclamation text-lg"></i></div>
+                            <h4 class="font-bold text-white">Simulate Tank Failure</h4>
+                        </div>
+                        <p class="text-xs text-slate-400">Triggers when remote stock tank water level drops below 15% capacity.</p>
+                    </button>
+                    <button @click="triggerAlert('drought')" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-xl p-5 text-left transition group">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <div class="bg-purple-500/20 text-purple-400 p-2.5 rounded-lg group-hover:scale-110 transition"><i class="fa-solid fa-seedling text-lg"></i></div>
+                            <h4 class="font-bold text-white">Simulate Drought Stress</h4>
+                        </div>
+                        <p class="text-xs text-slate-400">Triggers automated grazing rotation advisory based on deep soil moisture.</p>
+                    </button>
+                </div>
+
+                <!-- LIVE ALERT NOTIFICATION BANNER -->
+                <div x-show="alertTriggered" x-transition class="bg-red-500/10 border border-red-500/30 rounded-2xl p-5 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-red-500 text-white p-3 rounded-xl animate-bounce"><i class="fa-solid fa-bell text-xl"></i></div>
+                        <div>
+                            <p class="text-xs font-bold text-red-400 uppercase tracking-wider">Automated SMS & Push Alert Dispatched</p>
+                            <h4 class="text-white font-bold text-lg" x-text="alertTitle"></h4>
+                            <p class="text-slate-300 text-sm" x-text="alertMessage"></p>
+                        </div>
+                    </div>
+                    <button @click="alertTriggered = false" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CARBON & USDA GRANT LEDGER -->
+        <div x-show="activeTab === 'ledger'" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                    <p class="text-xs text-slate-400">Acreage Share in Pool</p>
+                    <h3 class="text-2xl font-bold text-white mt-1" x-text="currentProperty.acres + ' Acres (2.1% Pool Share)'"></h3>
+                    <p class="text-xs text-emerald-400 mt-2">Regional Aggregate Pool: 1,900 Acres</p>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                    <p class="text-xs text-slate-400">Est. Annual Carbon Dividend</p>
+                    <h3 class="text-2xl font-bold text-emerald-400 mt-1" x-text="currentProperty.carbonRevenue"></h3>
+                    <p class="text-xs text-slate-300 mt-2">75% Landowner / 25% Platform Split</p>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                    <p class="text-xs text-slate-400">USDA EQIP / CSP Grant Eligibility</p>
+                    <h3 class="text-2xl font-bold text-blue-400 mt-1" x-text="currentProperty.usdaGrantEst"></h3>
+                    <p class="text-xs text-slate-300 mt-2">Automated Audit Packet Ready</p>
+                </div>
+            </div>
+
+            <!-- FINANCIAL LEDGER TABLE -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow">
+                <h3 class="text-lg font-bold text-white mb-4">End-to-End Financial Ledger (Year 1 & Recurring)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                <th class="py-3 px-4">Line Item</th>
+                                <th class="py-3 px-4">Category</th>
+                                <th class="py-3 px-4">Landowner Position</th>
+                                <th class="py-3 px-4">Platform Position</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700/50 text-slate-300">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-white">Starter IoT Hardware Kit</td>
+                                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs bg-slate-700 text-slate-300">Upfront</span></td>
+                                <td class="py-3 px-4 text-red-400">-$1,200.00</td>
+                                <td class="py-3 px-4 text-emerald-400">+$300.00 markup</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-white">Monthly SaaS Enrollment ($59/mo)</td>
+                                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">Recurring</span></td>
+                                <td class="py-3 px-4 text-red-400">-$708.00 / yr</td>
+                                <td class="py-3 px-4 text-emerald-400">+$708.00 / yr</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-white">Annual Carbon Aggregation Payout</td>
+                                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-400">Dividend</span></td>
+                                <td class="py-3 px-4 text-emerald-400" x-text="'+' + currentProperty.carbonRevenue"></td>
+                                <td class="py-3 px-4 text-emerald-400" x-text="'+' + currentProperty.platformCut"></td>
+                            </tr>
+                            <tr class="bg-slate-700/20 font-bold text-white">
+                                <td class="py-3 px-4">Net Position (Year 1)</td>
+                                <td class="py-3 px-4">Total</td>
+                                <td class="py-3 px-4 text-amber-400" x-text="currentProperty.netYear1"></td>
+                                <td class="py-3 px-4 text-emerald-400" x-text="currentProperty.netCompanyYear1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: E-COMMERCE STARTER KIT -->
+        <div x-show="activeTab === 'storefront'" class="space-y-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Self-Service Dropship Kit</span>
+                    <h3 class="text-2xl font-bold text-white mt-2">Ozark Regional Starter Homestead Kit</h3>
+                    <p class="text-slate-300 text-sm mt-3">Everything needed to connect 20 to 100 acres to the regional LoRaWAN mesh and carbon pool. Pre-configured for plug-and-play QR activation.</p>
+                    
+                    <ul class="space-y-2.5 mt-6 text-sm text-slate-300">
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> 1x Solar-Powered Outdoor LoRaWAN Gateway (IP67)</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> 3x Multi-Depth Soil Moisture & Temperature Probes</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> 1x Ultrasonic Water Tank / Trough Monitor</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Instant Access to Mobile Dashboard & Carbon Pool</li>
+                    </ul>
+
+                    <div class="mt-8 flex items-center space-x-4">
+                        <span class="text-3xl font-bold text-white">$1,500</span>
+                        <span class="text-xs text-slate-400">+ $59/mo SaaS Enrollment</span>
+                        <button @click="alert('Simulated Stripe Checkout Initiated!')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition">
+                            <i class="fa-solid fa-cart-shopping mr-2"></i> Order Starter Kit
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 text-center">
+                    <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 inline-block mb-4">
+                        <i class="fa-solid fa-qrcode text-6xl text-emerald-400"></i>
+                    </div>
+                    <h4 class="font-bold text-white">3-Step QR Activation Wizard</h4>
+                    <p class="text-xs text-slate-400 mt-1">Scan box code -> Mount gateway on high point -> Drop property pin.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ALPINE.JS APP LOGIC & STAGED DATA -->
+    <script>
+        function dashboardApp() {
+            return {
+                activeTab: 'telemetry',
+                selectedPropertyId: 'prop1',
+                alertTriggered: false,
+                alertTitle: '',
+                alertMessage: '',
+                chartInstance: null,
+                
+                // STAGED DATA FOR 4 REGIONAL PROPERTIES
+                properties: [
+                    {
+                        id: 'prop1',
+                        name: 'Joplin Ridge Cattle Co.',
+                        type: 'Working Pasture & Livestock',
+                        location: 'Jasper County, MO (Joplin Hub)',
+                        acres: 40,
+                        gatewayStatus: 'Online (Solar 98%)',
+                        activeNodes: 4,
+                        annualPayout: '$480.00 / yr',
+                        description: 'Rolling fescue pasture with mixed hardwood breaks and 2 remote stock watering tanks.',
+                        coordinates: '37.0842° N, 94.5133° W',
+                        sensors: {
+                            soilMoisture: '34.2% (Optimal)',
+                            soilTemp: '58.4°F',
+                            waterLevel: '82% (Full)',
+                            carbonRate: '1.28 tCO2e / acre'
+                        },
+                        carbonRevenue: '$480.00 / yr',
+                        platformCut: '$160.00 / yr',
+                        usdaGrantEst: '$14,500 (EQIP Cost-Share)',
+                        netYear1: '-$1,428.00 (Upfront Setup)',
+                        netCompanyYear1: '+$1,132.00'
+                    },
+                    {
+                        id: 'prop2',
+                        name: 'Pittsburg Grain & Forage',
+                        type: 'Row-Crop & Hay Ground',
+                        location: 'Crawford County, KS (Western Anchor)',
+                        acres: 65,
+                        gatewayStatus: 'Online (Solar 94%)',
+                        activeNodes: 6,
+                        annualPayout: '$780.00 / yr',
+                        description: 'Mixed agricultural acreage utilizing cover crops and rotational hay production.',
+                        coordinates: '37.4109° N, 94.7045° W',
+                        sensors: {
+                            soilMoisture: '29.8% (Stable)',
+                            soilTemp: '60.1°F',
+                            waterLevel: '95% (Full)',
+                            carbonRate: '1.45 tCO2e / acre'
+                        },
+                        carbonRevenue: '$780.00 / yr',
+                        platformCut: '$260.00 / yr',
+                        usdaGrantEst: '$22,000 (EQIP / CSP)',
+                        netYear1: '-$1,198.00',
+                        netCompanyYear1: '+$1,348.00'
+                    },
+                    {
+                        id: 'prop3',
+                        name: 'Ozark Oak Timber Trust',
+                        type: 'Hardwood Timber & Wildlife',
+                        location: 'Benton County, AR (NWA Spillover)',
+                        acres: 50,
+                        gatewayStatus: 'Online (Solar 99%)',
+                        activeNodes: 3,
+                        annualPayout: '$850.00 / yr',
+                        description: 'Mature oak-hickory timber tract managed for carbon sequestration and wildlife habitat.',
+                        coordinates: '36.3729° N, 94.2088° W',
+                        sensors: {
+                            soilMoisture: '41.5% (High Retention)',
+                            soilTemp: '55.2°F',
+                            waterLevel: '100% (Creek Fed)',
+                            carbonRate: '2.10 tCO2e / acre'
+                        },
+                        carbonRevenue: '$850.00 / yr',
+                        platformCut: '$283.00 / yr',
+                        usdaGrantEst: '$18,500 (CSP Forestry)',
+                        netYear1: '-$1,338.00',
+                        netCompanyYear1: '+$1,225.00'
+                    },
+                    {
+                        id: 'prop4',
+                        name: 'Monett Dairy & Pasture',
+                        type: 'Dairy Support Pasture',
+                        location: 'Barry County, MO (Eastern Anchor)',
+                        acres: 30,
+                        gatewayStatus: 'Online (Solar 91%)',
+                        activeNodes: 4,
+                        annualPayout: '$360.00 / yr',
+                        description: 'Rotational dairy grazing pasture with high-frequency moisture monitoring requirements.',
+                        coordinates: '36.9206° N, 93.9039° W',
+                        sensors: {
+                            soilMoisture: '31.1% (Optimal)',
+                            soilTemp: '59.0°F',
+                            waterLevel: '64% (Normal)',
+                            carbonRate: '1.15 tCO2e / acre'
+                        },
+                        carbonRevenue: '$360.00 / yr',
+                        platformCut: '$120.00 / yr',
+                        usdaGrantEst: '$9,200 (EQIP Water Systems)',
+                        netYear1: '-$1,548.00',
+                        netCompanyYear1: '+$1,072.00'
+                    }
+                ],
+
+                get currentProperty() {
+                    return this.properties.find(p => p.id === this.selectedPropertyId) || this.properties[0];
+                },
+
+                init() {
+                    this.renderChart();
+                },
+
+                updatePropertyData() {
+                    // Re-render or update chart data on property switch
+                    if (this.chartInstance) {
+                        this.chartInstance.destroy();
+                    }
+                    this.renderChart();
+                },
+
+                triggerAlert(type) {
+                    this.alertTriggered = true;
+                    if (type === 'freeze') {
+                        this.alertTitle = '⚠️ Critical Frost Warning Triggered';
+                        this.alertMessage = 'Ground temperature dropped to 31.5°F on ' + this.currentProperty.name + '. Automated heater/shelter advisory sent to landowner.';
+                    } else if (type === 'water') {
+                        this.alertTitle = '🚨 Stock Tank Water Failure';
+                        this.alertMessage = 'Water level dropped to 12% in Pasture Tank 2 (' + this.currentProperty.name + '). Float valve inspection required.';
+                    } else if (type === 'drought') {
+                        this.alertTitle = '📊 Drought Stress & Grazing Alert';
+                        this.alertMessage = 'Deep soil moisture deficit detected across ' + this.currentProperty.name + '. Recommended rotation to paddock B initiated.';
+                    }
+                },
+
+                renderChart() {
+                    const ctx = document.getElementById('telemetryChart').getContext('2d');
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [{
+                                label: 'Soil Moisture (%)',
+                                data: [32, 33, 31, 35, 34, 34.2, 34],
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            }, {
+                                label: 'Soil Temp (°F)',
+                                data: [55, 56, 54, 57, 58, 58.4, 58],
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { labels: { color: '#94a3b8', font: { size: 12 } } }
+                            },
+                            scales: {
+                                x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                                y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
