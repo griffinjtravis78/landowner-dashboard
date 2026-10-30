@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ozark Land Intelligence | E-Commerce Storefront & QR Activation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js for interactivity -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased" x-data="storefrontApp()">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-seedling text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide text-white">Ozark Land Intelligence</h1>
+                    <p class="text-xs text-emerald-400">Four-State Regional Storefront</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- CART BUTTON -->
+                <button @click="cartOpen = true" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-cart-shopping text-emerald-400"></i>
+                    <span>Cart (<span x-text="cart.length"></span>)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN STOREFRONT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- HERO BANNER -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-widest">Self-Service HaaS Platform</span>
+            <h2 class="text-4xl font-extrabold text-white mt-4">Equip Your Property in the Four-State Region</h2>
+            <p class="text-slate-300 mt-4 text-lg">Solar-powered LoRaWAN gateways and multi-depth soil sensors dropshipped directly to your door. Plug it in, scan the QR code, and automate your land intelligence.</p>
+        </div>
+
+        <!-- PRODUCT CATALOG GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            
+            <!-- PRODUCT 1: STARTER KIT (FEATURED) -->
+            <div class="bg-slate-800 border-2 border-emerald-500/50 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Most Popular</div>
+                <div>
+                    <div class="bg-emerald-500/10 text-emerald-400 p-4 rounded-xl inline-block mb-4">
+                        <i class="fa-solid fa-box-open text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Ozark Starter Homestead Kit</h3>
+                    <p class="text-xs text-slate-400 mt-1">Ideal for 20 to 100 acres (Pasture or Timber)</p>
+                    <p class="text-slate-300 text-sm mt-4">Includes 1x Weatherproof Solar LoRaWAN Gateway, 3x Multi-Depth Soil Moisture Probes, and 1x Ultrasonic Water Tank Monitor.</p>
+                    
+                    <ul class="space-y-2 mt-6 text-sm text-slate-300">
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Pre-configured for QR self-activation</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Instant mobile dashboard access</li>
+                        <li><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Automatic carbon pool enrollment</li>
+                    </ul>
+                </div>
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <span class="text-2xl font-bold text-white">$1,500</span>
+                            <span class="text-xs text-slate-400 block">+ $59/mo SaaS Retainer</span>
+                        </div>
+                    </div>
+                    <button @click="addToCart({name: 'Ozark Starter Homestead Kit', price: 1500, recurring: 59, type: 'Kit'})" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow transition text-center">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRODUCT 2: EXTRA SOIL PROBE -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
+                <div>
+                    <div class="bg-blue-500/10 text-blue-400 p-4 rounded-xl inline-block mb-4">
+                        <i class="fa-solid fa-droplet text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Extra Soil Moisture Probe</h3>
+                    <p class="text-xs text-slate-400 mt-1">Deep-Root & Temperature Node</p>
+                    <p class="text-slate-300 text-sm mt-4">Add extra soil sensor nodes to monitor distant pastures, creek bottoms, or distinct timber stands.</p>
+                    
+                    <ul class="space-y-2 mt-6 text-sm text-slate-300">
+                        <li><i class="fa-solid fa-check text-blue-400 mr-2"></i> 3-depth moisture readings (10, 30, 60cm)</li>
+                        <li><i class="fa-solid fa-check text-blue-400 mr-2"></i> 5-year internal lithium battery</li>
+                        <li><i class="fa-solid fa-check text-blue-400 mr-2"></i> Weather-resistant IP67 enclosure</li>
+                    </ul>
+                </div>
+                <div class="mt-8 pt-6 border-t border-slate-700">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <span class="text-2xl font-bold text-white">$250</span>
+                            <span class="text-xs text-slate-400 block">One-time hardware fee</span>
+                        </div>
+                    </div>
+                    <button @click="addToCart({name: 'Extra Soil Moisture Probe', price: 250, recurring: 0, type: 'Sensor'})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shadow transition text-center border border-slate-600">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRODUCT 3: TANK & FLOW MONITOR -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow flex flex-col justify-between">
+                <div>
+                    <div class="bg-amber-500/10 text-amber-400 p-4 rounded-xl inline-block mb-4">
+                        <i class="fa-solid fa-water text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Remote Water Tank Monitor</h3>
+                    <p class="text-xs text-slate-400 mt-1">Ultrasonic Level & Freeze Alert</p>
+                    <p class="text-slate-300 text-sm mt-4">Prevent stock tank runouts and frozen pipe disasters with real-time level tracking
